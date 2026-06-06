@@ -1,0 +1,77 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  password      String?
+  image         String?
+  role          String    @default("user")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  subscriptions Subscription[]
+  donations     Donation[]
+}
+
+model Article {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  excerpt     String
+  content     String
+  imageUrl    String?
+  category    String
+  tags        String   @default("")
+  source      String
+  sourceUrl   String?
+  author      String?
+  isBreaking  Boolean  @default(false)
+  isFeatured  Boolean  @default(false)
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Transfer {
+  id          String   @id @default(cuid())
+  playerName  String
+  playerImage String?
+  fromClub    String
+  toClub      String
+  fee         String?
+  status      String   @default("rumour")
+  league      String?
+  nationality String?
+  source      String?
+  reportedAt  DateTime @default(now())
+  confirmedAt DateTime?
+}
+
+model Subscription {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  leagues    String   @default("")
+  categories String   @default("")
+  email      Boolean  @default(true)
+  push       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model Donation {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  amount    Float
+  currency  String   @default("USD")
+  status    String   @default("pending")
+  message   String?
+  createdAt DateTime @default(now())
+}
