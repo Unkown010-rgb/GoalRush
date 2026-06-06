@@ -61,9 +61,11 @@ export async function fetchRSSFeeds(): Promise<RSSArticle[]> {
           item['content:encoded'] ||
           item.contentSnippet ||
           ''
+        const rawMedia = (item as Record<string, unknown>)['media:content']
+        const mediaUrl = rawMedia && typeof rawMedia === 'object' ? (rawMedia as Record<string, unknown>).url as string | undefined : undefined
         const imageUrl =
           item.enclosure?.url ||
-          (item as Record<string, unknown>)['media:content']?.url ||
+          mediaUrl ||
           undefined
 
         articles.push({
